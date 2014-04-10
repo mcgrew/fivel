@@ -1,0 +1,70 @@
+
+#mainContent {
+  font-size: 1.3em;
+}
+
+select { 
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  padding: 0 2%;
+}
+
+select, input[type='time'] {
+  zoom: 1.5;
+  border-width: 0.8px;
+}
+
+#mainContent {
+  margin-top: 48px;
+  padding-bottom: 64px;
+}
+
+#actionBarIcon {
+  position: absolute;
+  top: 8px;
+  left: 0;
+  height: 32px;
+  width: 32px;
+}
+
+#menu ul {
+  margin: 0;
+  padding: 0;
+}
+
+#menu li {
+  list-style-type: none;
+  margin: 0;
+  padding: 1em 0 1em 2em;
+  border-bottom: 1px solid;
+}
+
+#mainMenuOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 100%;
+  width: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  z-index: 2;
+}
+
+.itemDetailList {
+  margin: 0;
+  padding: 0;
+}
+
+.itemDetailList li {
+  list-style-type: none;
+  margin: 0;
+  padding: 1em 0 1em 2em;
+  border-bottom: 1px solid;
+}
+
+.view_panel {
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+

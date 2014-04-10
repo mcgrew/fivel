@@ -1,0 +1,19 @@
+#login_page {
+  padding-top: 1.5em;
+  font-size: 2em;
+  text-align: center;
+}
+
+#login_user {
+  font-size: 1em; 
+  width: 90%;
+}
+
+#login_password {
+  font-size: 1em; 
+  width: 90%;
+}
+
+#login_page button {
+  font-size: 1em;
+}
