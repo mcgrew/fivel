@@ -36,8 +36,13 @@ MobileApp = function(name, options) {
   return this;
 }
 
-MobileApp.prototype.requireAuth = function(url) {
-  this.authURL = url;
+MobileApp.prototype.request = function(settings) {
+  return new AjaxRequest(settings);
+}
+
+MobileApp.prototype.requireAuth = function(authURL, deauthURL) {
+  this.authURL = authURL;
+  this.deauthURL = deauthURL;
 }
 
 MobileApp.prototype.scale = function(width) {
@@ -122,10 +127,14 @@ MobileApp.prototype.showPanel = function(index) {
   this.panels.current = index;
 }
 
-MobileApp.prototype.mustache = function(values) {
-  var newContent = this.content.mustache(values);
-  this.content.empty()
-  this.content.append(newContent);
+MobileApp.prototype.mustache = function(element, values) {
+  if (values === undefined) {
+    values = element;
+    element = this.content;
+  }
+  var newContent = $(element).mustache(values);
+  $(element).empty()
+  $(element).append(newContent);
 }
 
 /*
@@ -197,11 +206,11 @@ MobileApp.prototype.handleSwipe= function(username, password, options) {
 }
 
 MobileApp.prototype.authenticate = function(username, password, options) {
-  $.ajax({ 
+  this.request({ 
       url: this.authURL, 
       data: { 'username': username, 'password':password }, 
       type: 'post',
-      dataType: 'jsonp'
+      dataType: 'json'
   }).done(this.performAuth.bind(this, options)).error(
     (function(options) {
       // do somthing more elegant than 'alert'
@@ -211,11 +220,10 @@ MobileApp.prototype.authenticate = function(username, password, options) {
 }
 
 MobileApp.prototype.isAuthenticated = function(options) {
-  $.ajax({ 
+  this.request({ 
       url: this.authURL, 
-      jsonpCallback: 'auth',
       type: 'get',
-      dataType: 'jsonp'
+      dataType: 'json'
   }).done(this.performAuth.bind(this, options)).error(
         this.loadView.bind(this, options.fail));
 }
@@ -226,6 +234,20 @@ MobileApp.prototype.performAuth = function(options, response) {
     this.loadView(options.success)
   } else {
     this.loadView(options.fail)
+  }
+}
+
+MobileApp.prototype.logout = function() {
+  if (this.deauthURL) {
+    this.request({ 
+        url: this.deauthURL, 
+        dataType: 'json'
+    }).done((function(response) {
+        this.showMessage(response.message);
+        setTimeout(this.loadView.bind(this, 'login'), 1000);
+    }).bind(this));
+  } else {
+    this.showMessage("Logout is not enabled");
   }
 }
 
@@ -248,44 +270,47 @@ MobileApp.prototype.createItemDetailView = function() {
   return this.itemDetailView;
 }
 
-MobileApp.prototype.logout = function() {
-  this.showMessage("This doesn't work yet");
-}
-
 MobileApp.prototype.setViewHTML = function(html) {
   this.content.html(html);
 }
 
 MobileApp.prototype.loadView = function(view) {
-  if (view.contains('/')) // temporary
+  if (!view) {
     return;
-  var viewAttrs = this.views[view];
+  }
+  if (view.contains('/')) { // temporary
+    return;
+  }
+  if (this.currentView && this.currentView.unload) {
+    this.currentView.unload();
+  }
+  this.currentView = this.views[view];
   this.loadResources(
     // load any resources first
-    (viewAttrs.resources) ? viewAttrs.resources.reverse() : undefined, 
+    (this.currentView.resources) ? this.currentView.resources.reverse() : undefined, 
     // load the view html
     (function() {
       if (location.hash != '#'+view)
         location.hash = view;
-      if (viewAttrs.html) {
-        this.content.load(viewAttrs.html, (function(view, data) {
+      if (this.currentView.html) {
+        this.content.load(this.currentView.html, (function(view, data) {
           if (view.title) {
             this.setTitle(view.title);
           }
           if (view.init) {
             view.init();
           }
-        }.bind(this, viewAttrs)));
+        }.bind(this, this.currentView)));
       } else {
         this.content.empty();
         // run any initialization code after html is loaded
-        if (viewAttrs.init) {
-          viewAttrs.init();
+        if (this.currentView.init) {
+          this.currentView.init();
         }
-        this.setTitle(viewAttrs.title);
+        this.setTitle(this.currentView.title);
       }
-      if (viewAttrs.actionBar) {
-        this.actionBar.setAction(viewAttrs.actionBar);
+      if (this.currentView.actionBar) {
+        this.actionBar.setAction(this.currentView.actionBar);
       }
     }).bind(this)
   );
@@ -340,23 +365,12 @@ ActionBar = function(title) {
   ActionBar.instance = this;
   this.container = $('#actionBar')
   if (!this.container.length) {
-    this.container = $('<div id="actionBar"></div>').css({
-      'position': 'fixed',
-      'top': 0,
-      'padding-top': '13px',
-      'width': '100%',
-      'height': '35px',
-      'background-color': '#3a74ad',
-      'text-align': 'center',
-      'font-size': '1.7em',
-      'color': 'white',
-      'z-index': 1
-    });
+    this.container = $('<div id="actionBar"></div>');
     this.title = $('<span><span>')
     this.container.append(this.title);
     // wrapping svg images in a <div> and using it to size 
     // the image works around some svg issues in Android WebKit
-    this.icon = $('<img>')
+//    this.icon = $('<img>')
     this.iconBox = $('<div id="actionBarIcon" />');
     this.iconBox.append(this.icon);
     this.container.prepend(this.iconBox);
@@ -373,27 +387,40 @@ ActionBar.prototype.setColor = function(color) {
 }
 
 ActionBar.prototype.setAction = function(type) {
-  this.icon.unbind(MobileApp().options.clickEvent)
+  this.iconBox.unbind(MobileApp().options.clickEvent)
   if (type == 'menu') {
-    this.icon.attr('src', 'img/menuIcon.svg');
-    this.icon.show();
+//    this.icon.attr('src', 'img/menuIcon.svg');
+//    this.icon.show();
+    this.iconBox.load('img/menuIcon.svg');
+    this.iconBox.css('visibility', '');
     this.iconAction = (function( ) {
         this.show();
       }).bind(MobileApp().menu);
     // use the menu icon
   } else if (type == 'back') {
     // use the back icon
-    this.icon.attr('src', 'img/backIcon.svg');
-    this.icon.show();
+//    this.icon.attr('src', 'img/backIcon.svg');
+//    this.icon.show();
+    this.iconBox.load('img/backIcon.svg');
+    this.iconBox.css('visibility', '');
     this.iconAction = function() {
       history.go(-1);
     };
   } else if (type == 'none') {
-    this.icon.hide();
+//    this.icon.hide();
+    this.iconBox.css('visibility', 'hidden');
   }
   if (this.iconAction)
-    this.icon.on(MobileApp().options.clickEvent, this.iconAction)
+    this.iconBox.on(MobileApp().options.clickEvent, this.iconAction)
   return this;
+}
+
+ActionBar.prototype.hide = function() {
+  this.container.hide();
+}
+
+ActionBar.prototype.show = function() {
+  this.container.show();
 }
 
 
@@ -406,12 +433,11 @@ MainMenu = function(itemOptions) {
     'position': 'fixed',
     'top': 0,
     'left': 0,
-    'width': '15em',
+    'width': '300px',
     'height': '100%',
-    'outline': '1px solid black',
     'background-color': 'white',
     'z-index': 3,
-    'font-size': '1.5em'
+    'font-size': '1em'
   });
   this.element = $('<ul></ul>');
   this.overlay = ($('<div id="mainMenuOverlay"></div>'));
@@ -513,7 +539,9 @@ MenuItem.prototype.update = function() {
       if (this.icon.size) {
         this.element.find('img').css({ 
           'width':  this.icon.size[0],
-          'height': this.icon.size[1]
+          'height': this.icon.size[1],
+          'float': 'left',
+          'margin-right': '0.5em'
         });
       }
     }
@@ -668,6 +696,74 @@ $(function() {
       crossDomain: true
   });
 });
+
+// A wrapper around jquery's ajax implementation which will manually
+// handle session cookies so they don't time out.
+AjaxRequest = function(settings) {
+  if (this != window) {
+    settings.Cookie = localStorage.getItem('session')
+    settings.dataType = 'json';
+    this.jqXHR = $.ajax(settings);
+    return this;
+  }
+}
+
+AjaxRequest.prototype.abort = function(statusText)  {
+  this.jqXHR.abort(statusText);
+  return this;
+}
+
+AjaxRequest.prototype.always = function(func) {
+  this.jqXHR.always(function(response) {
+    this.getSession();
+    func.apply(arguments);
+    func.apply(this, arguments);
+  }.bind(this));
+  return this;
+}
+
+AjaxRequest.prototype.complete = function(func) {
+  this.jqXHR.complete(function(response) {
+    this.getSession();
+    func.apply(this, arguments);
+  }.bind(this));
+  return this;
+}
+
+AjaxRequest.prototype.done = function(func) {
+  this.jqXHR.done(function(response) {
+    this.getSession();
+    func.apply(this, arguments);
+  }.bind(this));
+  return this;
+}
+
+AjaxRequest.prototype.error = function(func) {
+  this.jqXHR.error(function(response) {
+    this.getSession();
+    func.apply(this, arguments);
+  }.bind(this));
+  return this;
+}
+
+AjaxRequest.prototype.fail = function(func) {
+  this.jqXHR.fail(function(response) {
+    this.getSession();
+    func.apply(this, arguments);
+  }.bind(this));
+  return this;
+}
+
+AjaxRequest.prototype.getSession = function() {
+  console.log("Headers: " + this.jqXHR.getAllResponseHeaders());
+  var match = this.jqXHR.getAllResponseHeaders().match(
+      /(Set-Cookie|set-cookie): (.+?);/);
+  if (match) {
+    localStorage.setItem("session", match[2]);
+    console.log("Session stored: " + match[2]);
+    return match[2];
+  }
+}
 
 
 /** ==== NATIVE CLASS EXTENSIONS ==== */
