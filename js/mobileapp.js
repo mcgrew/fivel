@@ -24,7 +24,8 @@ MobileApp = function(name, options) {
   $('title').html(name);
   this.actionBar = new ActionBar(name);
   this.content = $('<div id="mainContent"></div>');
-  this.storage = new Storage(name);
+  this.storage = new Storage(name + ' storage');
+  this.settings = new Storage(name + ' settings');
   $(document.body).append(this.content);
   $(window).on('hashchange', (function() {
     this.loadView(location.hash.substring(1));
