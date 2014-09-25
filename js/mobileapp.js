@@ -24,6 +24,7 @@ MobileApp = function(name, options) {
   $('title').html(name);
   this.actionBar = new ActionBar(name);
   this.content = $('<div id="mainContent"></div>');
+  this.storage = new Storage(name);
   $(document.body).append(this.content);
   $(window).on('hashchange', (function() {
     this.loadView(location.hash.substring(1));
@@ -389,9 +390,9 @@ ActionBar.prototype.setColor = function(color) {
 ActionBar.prototype.setAction = function(type) {
   this.iconBox.unbind(MobileApp().options.clickEvent)
   if (type == 'menu') {
-//    this.icon.attr('src', 'img/menuIcon.svg');
+//    this.icon.attr('src', 'img/menu_icon.svg');
 //    this.icon.show();
-    this.iconBox.load('img/menuIcon.svg');
+    this.iconBox.load('img/menu_icon.svg');
     this.iconBox.css('visibility', '');
     this.iconAction = (function( ) {
         this.show();
@@ -763,6 +764,43 @@ AjaxRequest.prototype.getSession = function() {
     console.log("Session stored: " + match[2]);
     return match[2];
   }
+}
+
+Storage = function(name) {
+    if (!name) {
+        return undefined;
+    }
+    if (this == window) {
+        return new Storage(name);
+    }
+    this.name = name;
+    if (localStorage[name]) {
+        this.raw = JSON.parse(localStorage[name]);
+     } else {
+        this.raw = {}
+     }
+     return this;
+}
+
+Storage.prototype.get = function(name) {
+    return this.raw[name];
+}
+
+Storage.prototype.set = function(name, value) {
+    this.raw[name] = value;
+    this.save();
+    return this;
+}
+
+Storage.prototype.save = function() {
+    localStorage[this.name] = JSON.stringify(this.raw);
+    return this;
+}
+
+Storage.prototype.clear = function() {
+    delete localStorage[this.name];
+    this.raw = {};
+    return this;
 }
 
 
