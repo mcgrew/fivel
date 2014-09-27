@@ -373,9 +373,10 @@ ActionBar = function(title) {
     // wrapping svg images in a <div> and using it to size 
     // the image works around some svg issues in Android WebKit
 //    this.icon = $('<img>')
-    this.iconBox = $('<div id="actionBarIcon" />');
+    this.iconBox = $('<div class="actionBarIcon" />');
     this.iconBox.append(this.icon);
     this.container.prepend(this.iconBox);
+    this.buttons = {};
     $(document.body).prepend(this.container);
   }
   if (title) {
@@ -428,6 +429,28 @@ ActionBar.prototype.show = function() {
 
 ActionBar.prototype.setTitle = function(title) {
   this.title.html(title)
+}
+
+ActionBar.prototype.addButton = function(options) {
+    options.side = options.side || "right";
+    options.container =  $('<div class="actionBarIcon"><img src="' + 
+        options.icon + '"></div>').css('float', options.side);
+    if (options.action)
+        options.container.click(options.action);
+    this.buttons[options.name] = options;
+    this.container.append(options.container);
+}
+
+ActionBar.prototype.showButton = function(name, show) {
+    if (!this.buttons[name]) {
+        console.log("No button named " + name);
+        return;
+    }
+    if (show) {
+        this.buttons[name].container.show();
+    } else {
+        this.buttons[name].container.hide();
+    }
 }
 
 MainMenu = function(itemOptions) {
