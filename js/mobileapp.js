@@ -368,15 +368,23 @@ ActionBar = function(title) {
   this.container = $('#actionBar')
   if (!this.container.length) {
     this.container = $('<div id="actionBar"></div>');
-    this.title = $('<span><span>')
+    this.title = $('<div id="actionBarTitle" />')
     this.container.append(this.title);
-    // wrapping svg images in a <div> and using it to size 
-    // the image works around some svg issues in Android WebKit
-//    this.icon = $('<img>')
-    this.iconBox = $('<div class="actionBarIcon" />');
-    this.iconBox.append(this.icon);
-    this.container.prepend(this.iconBox);
     this.buttons = {};
+    this.addButton({
+      name: "menu",
+      icon: "img/menu_icon.svg",
+      action: function( ) {
+        MobileApp().menu.show()
+      }
+    });
+    this.addButton({
+      name: "back",
+      icon: "img/back_icon.svg",
+      action: function( ) {
+        history.go(-1);
+      }
+    });
     $(document.body).prepend(this.container);
   }
   if (title) {
@@ -390,28 +398,15 @@ ActionBar.prototype.setColor = function(color) {
 }
 
 ActionBar.prototype.setAction = function(type) {
-  this.iconBox.unbind(MobileApp().options.clickEvent)
   if (type == 'menu') {
-//    this.icon.attr('src', 'img/menu_icon.svg');
-//    this.icon.show();
-    this.iconBox.load('img/menu_icon.svg');
-    this.iconBox.css('visibility', '');
-    this.iconAction = (function( ) {
-        this.show();
-      }).bind(MobileApp().menu);
-    // use the menu icon
+      this.showButton('menu', true);
+      this.showButton('back', false);
   } else if (type == 'back') {
-    // use the back icon
-//    this.icon.attr('src', 'img/backIcon.svg');
-//    this.icon.show();
-    this.iconBox.load('img/backIcon.svg');
-    this.iconBox.css('visibility', '');
-    this.iconAction = function() {
-      history.go(-1);
-    };
+      this.showButton('menu', false);
+      this.showButton('back', true);
   } else if (type == 'none') {
-//    this.icon.hide();
-    this.iconBox.css('visibility', 'hidden');
+      this.showButton('menu', false);
+      this.showButton('back', false);
   }
   if (this.iconAction)
     this.iconBox.on(MobileApp().options.clickEvent, this.iconAction)
@@ -432,13 +427,13 @@ ActionBar.prototype.setTitle = function(title) {
 }
 
 ActionBar.prototype.addButton = function(options) {
-    options.side = options.side || "right";
+    options.side = options.side || "left";
     options.container =  $('<div class="actionBarIcon"><img src="' + 
         options.icon + '"></div>').css('float', options.side);
     if (options.action)
         options.container.click(options.action);
     this.buttons[options.name] = options;
-    this.container.append(options.container);
+    this.title.before(options.container);
 }
 
 ActionBar.prototype.showButton = function(name, show) {

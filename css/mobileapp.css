@@ -73,11 +73,10 @@ select {
   padding: 0;
   width: 100%;
   height: 50px;
-  text-align: center;
   vertical-align: middle;
   font-size: 1.2em;
   z-index: 1;
-
+  text-align: center;
 }
 
 .actionBarIcon {
@@ -89,10 +88,10 @@ select {
   width: 32px;
 }
 
-#actionBar span{
-    display:inline-block;
-    margin-top: 15px;
+#actionBarTitle{
+  margin-top: 15px;
 }
+
 .icon svg{
     margin-top:-3px;
 }
