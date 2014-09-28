@@ -793,7 +793,7 @@ Storage = function(name) {
         return new Storage(name);
     }
     this.name = name;
-    if (localStorage[name]) {
+    if (localStorage.getItem(name)) {
         this.raw = JSON.parse(localStorage[name]);
      } else {
         this.raw = {}
@@ -811,13 +811,20 @@ Storage.prototype.set = function(name, value) {
     return this;
 }
 
+Storage.prototype.remove = function(name) {
+    var returnvalue = this.raw[name];
+    delete this.raw[name];
+    this.save();
+    return returnvalue;
+}
+
 Storage.prototype.save = function() {
-    localStorage[this.name] = JSON.stringify(this.raw);
+    localStorage.setItem(this.name, JSON.stringify(this.raw));
     return this;
 }
 
 Storage.prototype.clear = function() {
-    delete localStorage[this.name];
+    localStorage.removeItem(this.name);
     this.raw = {};
     return this;
 }
