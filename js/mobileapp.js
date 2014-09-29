@@ -139,6 +139,22 @@ MobileApp.prototype.mustache = function(element, values) {
   $(element).append(newContent);
 }
 
+/**
+ * Enables legacy mode - replacing svg images with png images in the Action Bar
+ * and Main Menu. This requires that all svg images have a png counterpart. 
+ * Required since Android 2.x webkit does not support svg images.
+ *
+ * png images can be generated using inkscape shell: 
+ * $ inkscape --shell
+ * > home.svg --export-png home.png
+ */
+MobileApp.prototype.legacy = function() {
+  this.legacy = true;
+  this.menu.legacy();
+  this.actionBar.legacy()
+}
+
+
 /*
  * Emulate swipes in javascript. This doesn't work yet.
  */
@@ -428,7 +444,7 @@ ActionBar.prototype.setTitle = function(title) {
 
 /**
  * Enables legacy mode - replacing svg images with png images. This requires
- * That all svg images have a png counterpart. Required since Android 2.x 
+ * that all svg images have a png counterpart. Required since Android 2.x 
  * webkit does not support svg images.
  *
  * png images can be generated using inkscape shell: 
@@ -509,8 +525,8 @@ MainMenu = function(itemOptions) {
 }
 
 MainMenu.prototype.add = function(options) {
-  if (this.legacy) { // For Android 2.x
-    options.icon = options.icon.replace(/.svg$/, '.png')
+  if (options.icon && this.legacy) { // For Android 2.x
+    options.icon.url = options.icon.url.replace(/.svg$/, '.png')
   }
   var newItem = new MenuItem(options); 
   this.items.push(newItem);
@@ -549,7 +565,7 @@ MainMenu.prototype.setEnabled = function(enabled) {
 
 /**
  * Enables legacy mode - replacing svg images with png images. This requires
- * That all svg images have a png counterpart. Required since Android 2.x 
+ * that all svg images have a png counterpart. Required since Android 2.x 
  * webkit does not support svg images.
  *
  * png images can be generated using inkscape shell: 
