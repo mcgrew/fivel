@@ -426,12 +426,34 @@ ActionBar.prototype.setTitle = function(title) {
   this.title.html(title)
 }
 
+/**
+ * Enables legacy mode - replacing svg images with png images. This requires
+ * That all svg images have a png counterpart. Required since Android 2.x 
+ * webkit does not support svg images.
+ *
+ * png images can be generated using inkscape shell: 
+ * $ inkscape --shell
+ * > home.svg --export-png home.png
+ */
+ActionBar.prototype.legacy = function() {
+  this.legacy = true;
+  for (var i in this.buttons) {
+      this.buttons[i].icon = this.buttons[i].icon.replace(/\.svg$/, '.png')
+  }
+  this.container.find('img[src$=".svg"]').each(function() { 
+    this.src = this.src.replace(/.svg$/, '.png')
+  });
+}
+
 ActionBar.prototype.addButton = function(options) {
     options.side = options.side || "left";
     options.container =  $('<div class="actionBarIcon"><img src="' + 
         options.icon + '"></div>').css('float', options.side);
     if (options.action)
         options.container.click(options.action);
+    if (this.legacy) {
+      options.icon = options.icon.replace(/\.svg$/, '.png')
+    }
     this.buttons[options.name] = options;
     this.title.before(options.container);
 }
@@ -487,6 +509,9 @@ MainMenu = function(itemOptions) {
 }
 
 MainMenu.prototype.add = function(options) {
+  if (this.legacy) { // For Android 2.x
+    options.icon = options.icon.replace(/.svg$/, '.png')
+  }
   var newItem = new MenuItem(options); 
   this.items.push(newItem);
   this.element.append(newItem.element);
@@ -520,6 +545,25 @@ MainMenu.prototype.setEnabled = function(enabled) {
   if (!enabled) {
     this.hide();
   }
+}
+
+/**
+ * Enables legacy mode - replacing svg images with png images. This requires
+ * That all svg images have a png counterpart. Required since Android 2.x 
+ * webkit does not support svg images.
+ *
+ * png images can be generated using inkscape shell: 
+ * $ inkscape --shell
+ * > home.svg --export-png home.png
+ */
+MainMenu.prototype.legacy = function() {
+  this.legacy = true;
+  for (var i in this.buttons) {
+      this.items[i].icon = this.items[i].icon.replace(/\.svg$/, '.png')
+  }
+  this.container.find('img[src$=".svg"]').each(function() { 
+    this.src = this.src.replace(/.svg$/, '.png')
+  });
 }
 
 

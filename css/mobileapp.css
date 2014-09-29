@@ -88,6 +88,12 @@ select {
   width: 32px;
 }
 
+/* Older Android doesn't handle resizing svg properly */
+.actionBarIcon img:not([src$=".svg"]) {
+  height: 32px;
+  width: 32px;
+}
+
 #actionBarTitle{
   margin-top: 15px;
 }
