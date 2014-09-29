@@ -463,13 +463,13 @@ ActionBar.prototype.legacy = function() {
 
 ActionBar.prototype.addButton = function(options) {
     options.side = options.side || "left";
+    if (this.legacy) {
+      options.icon = options.icon.replace(/\.svg$/, '.png')
+    }
     options.container =  $('<div class="actionBarIcon"><img src="' + 
         options.icon + '"></div>').css('float', options.side);
     if (options.action)
         options.container.click(options.action);
-    if (this.legacy) {
-      options.icon = options.icon.replace(/\.svg$/, '.png')
-    }
     this.buttons[options.name] = options;
     this.title.before(options.container);
 }
