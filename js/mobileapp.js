@@ -21,6 +21,7 @@ MobileApp = function(name, options) {
   if (this.options.scale) {
     this.scale(this.options.scale);
   }
+  this.browser = this.detectBrowser();
   $('title').html(name);
   this.actionBar = new ActionBar(name);
   this.content = $('<div id="mainContent"></div>');
@@ -36,6 +37,40 @@ MobileApp = function(name, options) {
   }
 //  this.emulateSwipe(); // broken
   return this;
+}
+
+/**
+ * This is only designed to detect mobile browsers for now. Results on Desktop
+ * browsers may be unpredictable.
+ *
+ * TODO: Fix this for tablet and desktop browser detection.
+ */
+MobileApp.prototype.detectBrowser = function() {
+  var browser = {};
+  if (/(iPhone|iPad)/.exec(navigator.userAgent)) {
+    browser.iOS = {};
+    if (/Mac OS/.exec(navigator.userAgent)) {
+      browser.iOS.safari = true;
+    }
+    if (/CriOS/.exec(navigator.userAgent)) {
+      browser.iPhone.chrome = true;
+    }
+    if (/iPad/.exec(navigator.userAgent)) {
+      browser.tablet = true;
+    }
+  }
+  if (/Android/.exec(navigator.userAgent)) {
+    browser.android = {}
+    if (/Chrome\//.exec(navigator.userAgent)) {
+      browser.android.chrome = true;
+    } else {
+      browser.android.webview = true;
+    }
+    if (!/Mobile Safari/.exec(navigator.userAgent)) {
+      browser.tablet = true;
+    }
+  }
+  return browser;
 }
 
 MobileApp.prototype.request = function(settings) {
@@ -299,13 +334,17 @@ MobileApp.prototype.loadView = function(view) {
   if (view.contains('/')) { // temporary
     return;
   }
-  if (this.currentView && this.currentView.unload) {
+  if (this.currentView) {
+    this.unloadResources(this.currentView.resources.slice(0));
+    if (this.currentView.unload) {
     this.currentView.unload();
+  }
   }
   this.currentView = this.views[view];
   this.loadResources(
     // load any resources first
-    (this.currentView.resources) ? this.currentView.resources.reverse() : undefined, 
+    ((this.currentView.resources) ? this.currentView.resources.slice(0).reverse() 
+      : undefined), 
     // load the view html
     (function() {
       if (location.hash != '#'+view)
@@ -350,6 +389,18 @@ MobileApp.prototype.loadResources = function(resources, complete) {
   var resource = resources.pop();
   this.loadResource(resource, undefined,
       this.loadResources.bind(this, resources, complete));
+}
+
+MobileApp.prototype.unloadResources = function(resources, complete) {
+  if (!resources || !resources.length) {
+    if (complete) {
+      return complete();
+    }
+    return;
+  }
+  var resource = resources.pop();
+  this.unloadResource(resource, undefined,
+      this.unloadResources.bind(this, resources, complete));
 }
 
 MobileApp.prototype.loadResource = function(resource, type, complete) {
