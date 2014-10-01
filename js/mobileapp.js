@@ -369,6 +369,21 @@ MobileApp.prototype.loadResource = function(resource, type, complete) {
     return;
 }
   
+MobileApp.prototype.unloadResource = function(resource, type, complete) {
+  // autodetect the resource type
+  if (type == 'css' || resource.substring(resource.length - 4) == '.css') {
+    $('link[href="'+resource+'"]').detach();
+    if (complete)
+      complete();
+  }
+  else if (type == 'js' || resource.substring(resource.length - 3) == '.js') {
+    // TODO: figure out how to disable or remove scripts.
+  }
+  else // unable to determine the type. abort.
+    return;
+}
+  
+  
 // find a home for this
 function roundCircles() {
   $('.circle').each(function() {
