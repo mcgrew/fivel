@@ -181,22 +181,6 @@ MobileApp.prototype.mustache = function(element, values) {
   $(element).append(newContent);
 }
 
-/**
- * Enables legacy mode - replacing svg images with png images in the Action Bar
- * and Main Menu. This requires that all svg images have a png counterpart. 
- * Required since Android 2.x webkit does not support svg images.
- *
- * png images can be generated using inkscape shell: 
- * $ inkscape --shell
- * > home.svg --export-png home.png
- */
-MobileApp.prototype.legacy = function() {
-  this.legacyMode = true;
-  this.menu.legacy();
-  this.actionBar.legacy()
-}
-
-
 /*
  * Emulate swipes in javascript. This doesn't work yet.
  */
@@ -518,30 +502,8 @@ ActionBar.prototype.setTitle = function(title) {
   this.title.html(title)
 }
 
-/**
- * Enables legacy mode - replacing svg images with png images. This requires
- * that all svg images have a png counterpart. Required since Android 2.x 
- * webkit does not support svg images.
- *
- * png images can be generated using inkscape shell: 
- * $ inkscape --shell
- * > home.svg --export-png home.png
- */
-ActionBar.prototype.legacy = function() {
-  this.legacyMode = true;
-  for (var i in this.buttons) {
-      this.buttons[i].icon = this.buttons[i].icon.replace(/\.svg$/, '.png')
-  }
-  this.container.find('img[src$=".svg"]').each(function() { 
-    this.src = this.src.replace(/.svg$/, '.png')
-  });
-}
-
 ActionBar.prototype.addButton = function(options) {
     options.side = options.side || "left";
-    if (this.legacyMode) {
-      options.icon = options.icon.replace(/\.svg$/, '.png')
-    }
     options.container =  $('<div class="actionBarIcon"><img src="' + 
         options.icon + '"></div>').css('float', options.side);
     if (options.action)
@@ -638,26 +600,6 @@ MainMenu.prototype.setEnabled = function(enabled) {
     this.hide();
   }
 }
-
-/**
- * Enables legacy mode - replacing svg images with png images. This requires
- * that all svg images have a png counterpart. Required since Android 2.x 
- * webkit does not support svg images.
- *
- * png images can be generated using inkscape shell: 
- * $ inkscape --shell
- * > home.svg --export-png home.png
- */
-MainMenu.prototype.legacy = function() {
-  this.legacyMode = true;
-  for (var i in this.buttons) {
-      this.items[i].icon = this.items[i].icon.replace(/\.svg$/, '.png')
-  }
-  this.container.find('img[src$=".svg"]').each(function() { 
-    this.src = this.src.replace(/.svg$/, '.png')
-  });
-}
-
 
 MenuItem = function(options) {
   this.element = $("<li></li>");

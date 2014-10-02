@@ -26,6 +26,7 @@ ln -s    ../$FIVEL_DIR/index.html www/index.html
 ln -s ../../$FIVEL_DIR/js/jquery.min.js www/js/jquery.min.js
 ln -s ../../$FIVEL_DIR/js/jquery.mustache.js www/js/jquery.mustache.js
 ln -s ../../$FIVEL_DIR/js/mobileapp.js www/js/mobileapp.js
+ln -s ../../$FIVEL_DIR/js/legacy.js www/js/legacy.js
 
 # add hooks to handle the symlinks in the www directory.
 mkdir -p hooks/before_build hooks/before_run hooks/after_build hooks/after_run
