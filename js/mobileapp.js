@@ -184,7 +184,7 @@ MobileApp.prototype.mustache = function(element, values) {
  * > home.svg --export-png home.png
  */
 MobileApp.prototype.legacy = function() {
-  this.legacy = true;
+  this.legacyMode = true;
   this.menu.legacy();
   this.actionBar.legacy()
 }
@@ -341,6 +341,9 @@ MobileApp.prototype.loadView = function(view) {
   }
   }
   this.currentView = this.views[view];
+  if (!this.currentView) {
+    return;
+  }
   this.loadResources(
     // load any resources first
     ((this.currentView.resources) ? this.currentView.resources.slice(0).reverse() 
@@ -518,7 +521,7 @@ ActionBar.prototype.setTitle = function(title) {
  * > home.svg --export-png home.png
  */
 ActionBar.prototype.legacy = function() {
-  this.legacy = true;
+  this.legacyMode = true;
   for (var i in this.buttons) {
       this.buttons[i].icon = this.buttons[i].icon.replace(/\.svg$/, '.png')
   }
@@ -529,7 +532,7 @@ ActionBar.prototype.legacy = function() {
 
 ActionBar.prototype.addButton = function(options) {
     options.side = options.side || "left";
-    if (this.legacy) {
+    if (this.legacyMode) {
       options.icon = options.icon.replace(/\.svg$/, '.png')
     }
     options.container =  $('<div class="actionBarIcon"><img src="' + 
@@ -591,7 +594,7 @@ MainMenu = function(itemOptions) {
 }
 
 MainMenu.prototype.add = function(options) {
-  if (options.icon && this.legacy) { // For Android 2.x
+  if (options.icon && this.legacyMode) { // For Android 2.x
     options.icon.url = options.icon.url.replace(/.svg$/, '.png')
   }
   var newItem = new MenuItem(options); 
@@ -639,7 +642,7 @@ MainMenu.prototype.setEnabled = function(enabled) {
  * > home.svg --export-png home.png
  */
 MainMenu.prototype.legacy = function() {
-  this.legacy = true;
+  this.legacyMode = true;
   for (var i in this.buttons) {
       this.items[i].icon = this.items[i].icon.replace(/\.svg$/, '.png')
   }
