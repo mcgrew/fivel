@@ -22,8 +22,8 @@ MobileApp = function(name, options) {
     this.scale(this.options.scale);
   }
   this.browser = this.detectBrowser();
-  $('title').html(name);
   this.actionBar = new ActionBar(name);
+  $('title').html(name);
   this.content = $('<div id="mainContent"></div>');
   this.storage = new Storage(name + ' storage');
   this.settings = new Storage(name + ' settings');
@@ -61,6 +61,13 @@ MobileApp.prototype.detectBrowser = function() {
   }
   if (/Android/.exec(navigator.userAgent)) {
     browser.android = {}
+    browser.android.version = {}
+    var version = /Android (\d+)\.(\d+)(?:\.(\d+))?/.exec(navigator.userAgent);
+    browser.android.version.major = Number(version[1]);
+    browser.android.version.minor = Number(version[2]);
+    if (version[3]) {
+      browser.android.version.rev = Number(version[3]);
+    }
     if (/Chrome\//.exec(navigator.userAgent)) {
       browser.android.chrome = true;
     } else {
