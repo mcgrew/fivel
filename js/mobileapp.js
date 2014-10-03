@@ -31,10 +31,6 @@ MobileApp = function(name, options) {
   $(window).on('hashchange', (function() {
     this.loadView(location.hash.substring(1));
   }).bind(this));
-  // see if this is running in phonegap/cordova
-  if (location.protocol == 'file:') {
-    $.getScript('cordova.js');
-  }
 //  this.emulateSwipe(); // broken
   return this;
 }
@@ -577,7 +573,8 @@ MainMenu = function(itemOptions) {
       this.show();
     }
   }).bind(this));
-
+  // listen for the menu button on devices that have one
+  document.addEventListener("menubutton", this.show.bind(this), false);
   return this;
 }
 
