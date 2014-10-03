@@ -30,10 +30,10 @@ ln -s ../../$FIVEL_DIR/js/legacy.js www/js/legacy.js
 
 # add hooks to handle the symlinks in the www directory.
 mkdir -p hooks/before_build hooks/before_run hooks/after_build hooks/after_run
-ln -s ../../$FIVEL_DIR/050_before_build.sh hooks/before_build/
-ln -s ../../$FIVEL_DIR/050_before_build.sh hooks/before_run/
-ln -s ../../$FIVEL_DIR/050_after_build.sh hooks/after_build/
-ln -s ../../$FIVEL_DIR/050_after_build.sh hooks/after_run/
+ln -s ../../$FIVEL_DIR/050_fivel_before_build.sh hooks/before_build/
+ln -s ../../$FIVEL_DIR/050_fivel_before_build.sh hooks/before_run/
+ln -s ../../$FIVEL_DIR/050_fivel_after_build.sh hooks/after_build/
+ln -s ../../$FIVEL_DIR/050_fivel_after_build.sh hooks/after_run/
 
 
 echo "Creating/copying other required files..."
