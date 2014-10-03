@@ -15,6 +15,12 @@ MobileApp.prototype.legacy = function() {
   this.legacyMode = true;
   this.menu.legacy();
   this.actionBar.legacy()
+  var topng = function() {
+    this.content.find('img[src$=".svg"]').each(function() { 
+      this.src = this.src.replace(/.svg$/, '.png')
+    });
+  }
+  this.on('contentLoaded', topng);
 }
 
 
@@ -62,4 +68,5 @@ MainMenu.prototype.add = function(options) {
   }
   this.$add(options);
 }
+
 

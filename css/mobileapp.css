@@ -114,10 +114,6 @@ select {
   margin-top: 11px;
 }
 
-.icon svg{
-    margin-top:-3px;
-}
- 
 #menu ul {
   margin: 0;
   padding: 0;
@@ -129,6 +125,13 @@ select {
   padding: 1em;
   border-bottom: 1px solid #ddd;
 }
+
+/* Older Android doesn't handle resizing svg properly */
+#menu .icon img:not([src$=".svg"]) {
+  height: 100%;;
+  width: 100%;
+}
+
 
 #mainMenuOverlay {
   position: fixed;

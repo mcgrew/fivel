@@ -295,7 +295,7 @@ MobileApp.prototype.logout = function() {
   }
 }
 
-MobileApp.prototype.initMenu = function(items) {
+MobileApp.prototype.initMenu = function(items) { 
   this.menu = new MainMenu(items)
   this.actionBar.setAction('menu')
   return this;
@@ -563,9 +563,6 @@ MainMenu = function(itemOptions) {
 }
 
 MainMenu.prototype.add = function(options) {
-  if (options.icon && this.legacyMode) { // For Android 2.x
-    options.icon.url = options.icon.url.replace(/.svg$/, '.png')
-  }
   var newItem = new MenuItem(options); 
   this.items.push(newItem);
   this.element.append(newItem.element);
@@ -621,27 +618,16 @@ MenuItem.prototype.setIcon = function(icon) {
 
 MenuItem.prototype.update = function() {
   if (this.icon) {
-    // workaround for broken svg support in Android webkit.
-    if (this.icon.url.substring(this.icon.url.length-4) == '.svg') {
-      this.element.html('<div class="icon"></div>' + this.name);
-      if (this.icon.size) {
-        this.element.find('div.icon').css({ 
-          'width':  this.icon.size[0],
-          'height': this.icon.size[1],
-          'float': 'left',
-          'margin-right': '0.5em'
-        }).load(this.icon.url);
-      }
-    } else {
-      this.element.html('<img src="' + this.icon.url + '">' + this.name);
-      if (this.icon.size) {
-        this.element.find('img').css({ 
-          'width':  this.icon.size[0],
-          'height': this.icon.size[1],
-          'float': 'left',
-          'margin-right': '0.5em'
-        });
-      }
+    var iconImg = $('<img src="' + this.icon.url + '">'); 
+    // Android webkit doesn't handle svg sizing correctly, so don't use it there
+    this.element.html('<div class="icon"></div>' + this.name);
+    if (this.icon.size) {
+      this.element.find('div.icon').css({ 
+        'width':  this.icon.size[0],
+        'height': this.icon.size[1],
+        'float': 'left',
+        'margin-right': '0.5em'
+      }).append(iconImg);
     }
   } else {
     this.element.html(this.name);
