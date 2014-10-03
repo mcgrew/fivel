@@ -19,8 +19,9 @@ MobileApp.prototype.legacy = function() {
     this.content.find('img[src$=".svg"]').each(function() { 
       this.src = this.src.replace(/.svg$/, '.png')
     });
-  }
+  }.bind(this)
   this.on('contentLoaded', topng);
+  topng();
 }
 
 

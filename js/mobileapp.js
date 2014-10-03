@@ -351,6 +351,7 @@ MobileApp.prototype.loadView = function(view) {
           if (view.init) {
             view.init();
           }
+          this._fireEvent('contentLoaded')
         }.bind(this, this.currentView)));
       } else {
         this.content.empty();
@@ -367,6 +368,24 @@ MobileApp.prototype.loadView = function(view) {
   );
   return this;
 }
+
+/* Event handling */
+MobileApp.prototype.listeners = {};
+MobileApp.prototype.on = function(evt, func) {
+  this.listeners[evt] = this.listeners[evt] || [];
+  this.listeners[evt].push(func);
+}
+
+MobileApp.prototype._fireEvent = function(evt) {
+  // put the arguments into an array
+  var args = []
+  Array.prototype.push.apply(args, arguments);
+  args[0] = this;
+  for (var i in this.listeners[evt]) {
+    this.listeners[evt][i].apply(this);
+  }
+}
+/* End event handling */
 
 MobileApp.prototype.setTitle = function(text) {
   this.actionBar.setTitle(text);
