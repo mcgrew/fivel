@@ -574,7 +574,13 @@ MainMenu = function(itemOptions) {
     }
   }).bind(this));
   // listen for the menu button on devices that have one
-  document.addEventListener("menubutton", this.show.bind(this), false);
+  document.addEventListener("menubutton", function () {
+    if (this.showing) {
+      this.hide();
+    } else {
+      this.show();
+    }
+  }.bind(this), false);
   return this;
 }
 
@@ -600,11 +606,13 @@ MainMenu.prototype.show = function() {
     this.overlay.show();
     this.container.animate({'left': 0}, 100);
   }
+  this.showing = true;
 }
 
 MainMenu.prototype.hide = function() {
   this.overlay.hide();
   this.container.animate({'left': -this.container.width()}, 100);
+  this.showing = false;
 }
 
 MainMenu.prototype.setEnabled = function(enabled) {
