@@ -37,7 +37,7 @@ ln -s ../../$FIVEL_DIR/050_fivel_after_build.sh hooks/after_run/
 
 
 echo "Creating/copying other required files..."
-touch css/app.css
+touch www/css/app.css
 
-cp -i $FIVEL_DIR/js/logic.js js/logic.js
-cp -i $FIVEL_DIR/css/theme.css css/theme.css
+cp -i $FIVEL_DIR/js/logic.js www/js/logic.js
+cp -i $FIVEL_DIR/css/theme.css www/css/theme.css
