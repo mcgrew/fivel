@@ -153,8 +153,26 @@ select {
   list-style-type: none;
   margin: 0;
   padding: 1em 0 1em 2em;
-  border-bottom: 1px solid;
+  border-bottom: 1px solid black;
 }
+
+.itemDetailList li.withIcon {
+  padding-left: 46px;
+}
+
+.itemDetailList .contentItemIcon {
+    width: 21px;
+    height: 100%;
+    float:left;
+    margin-left: -30px;
+    padding:0;
+}
+
+.itemDetailList .contentItemIcon img:not([src$=".svg"]) {
+    width: 21px;
+    height: 21px;
+}
+
 
 .view_panel {
   position: absolute;

@@ -70,4 +70,13 @@ MainMenu.prototype.add = function(options) {
   this.$add(options);
 }
 
+_Item = Item;
+
+Item = function(options) {
+  if (options.icon) {
+    options.icon = options.icon.replace(/.svg$/, '.png')
+  }
+  return new _Item(options);
+}
+
 

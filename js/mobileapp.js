@@ -377,8 +377,10 @@ MobileApp.prototype._fireEvent = function(evt) {
   var args = []
   Array.prototype.push.apply(args, arguments);
   args[0] = this;
-  for (var i in this.listeners[evt]) {
-    this.listeners[evt][i].apply(this);
+  if (this.listeners[evt]) {
+    for (var i in this.listeners[evt]) {
+      this.listeners[evt][i].apply(this);
+    }
   }
 }
 /* End event handling */
@@ -765,11 +767,12 @@ ItemDetailView = function(listContainer, detailContainer) {
   return this;
 }
 
-ItemDetailView.prototype.createItem = function(itemId, itemName, detailFunc) {
-  var item = new Item(
-      itemId, itemName, detailFunc, this.detailCallback);
-  this.items[itemId] = item;
+ItemDetailView.prototype.createItem = function(options) { // itemId, itemName, detailFunc, icon) {
+  options.callback = this.detailCallback;
+  var item = new Item(options);
+  this.items[options.id] = item;
   this.listElement.append(item.element);
+//  MobileApp()._fireEvent('contentLoaded')
   return item;
 }
 
@@ -777,15 +780,20 @@ ItemDetailView.prototype.showDetail = function(itemId) {
   this.items[itemId].detail();
 }
 
-Item = function(id, name, detailFunc, detailCallback) {
-  this.id = id;
-  this.name = name;
-  this.detail = detailFunc;
-  this.detailCallback = detailCallback;
-  this.element = $('<li>'+name+'</li>');
+Item = function(options) { //id, name, detailFunc, detailCallback, icon) {
+  this.id = options.id;
+  this.detail = options.detail;
+  this.detailCallback = options.callback;
+  this.element = $('<li class="contentItem">'+options.content+'</li>');
+  if (options.icon) {
+    this.icon = $('<div class="contentItemIcon"><img src="'+options.icon+'"></div>');
+    this.element.addClass('withIcon');
+    this.element.prepend(this.icon);
+  }
   this.element.on(MobileApp().options.clickEvent, (function() {
     return this.showDetail();
   }).bind(this));
+  return this;
 }
 
 Item.prototype.showDetail = function() {
@@ -815,6 +823,8 @@ AjaxRequest = function(settings) {
     return this;
   }
 }
+
+AjaxRequest.concurrent = 0;
 
 AjaxRequest.prototype.abort = function(statusText)  {
   this.jqXHR.abort(statusText);
@@ -863,12 +873,10 @@ AjaxRequest.prototype.fail = function(func) {
 }
 
 AjaxRequest.prototype.getSession = function() {
-  console.log("Headers: " + this.jqXHR.getAllResponseHeaders());
   var match = this.jqXHR.getAllResponseHeaders().match(
       /(Set-Cookie|set-cookie): (.+?);/);
   if (match) {
     localStorage.setItem("session", match[2]);
-    console.log("Session stored: " + match[2]);
     return match[2];
   }
 }
