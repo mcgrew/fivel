@@ -93,7 +93,7 @@ select {
   vertical-align: middle;
   font-size: 1.2em;
   z-index: 1;
-  text-align: center;
+  text-align: left;
 }
 
 .actionBarIcon {
