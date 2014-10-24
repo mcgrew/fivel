@@ -45,6 +45,18 @@ MobileApp.prototype.detectBrowser = function() {
   var browser = {};
   if (/(iPhone|iPad)/.exec(navigator.userAgent)) {
     browser.iOS = {};
+    browser.iOS.version = {}
+    $(document.body).addClass('iOS');
+    var version = /OS (\d+)_(\d+)(?:_(\d+))?/.exec(navigator.userAgent);
+    if (version.length > 1) {
+      browser.iOS.version.major = Number(version[1]);
+    }
+    if (version.length > 2) {
+      browser.iOS.version.minor = Number(version[2]);
+    }
+    if (version.length > 3) {
+      browser.iOS.version.rev = Number(version[3]);
+    }
     if (/Mac OS/.exec(navigator.userAgent)) {
       browser.iOS.safari = true;
     }
@@ -58,10 +70,15 @@ MobileApp.prototype.detectBrowser = function() {
   if (/Android/.exec(navigator.userAgent)) {
     browser.android = {}
     browser.android.version = {}
+    $(document.body).addClass('android');
     var version = /Android (\d+)\.(\d+)(?:\.(\d+))?/.exec(navigator.userAgent);
-    browser.android.version.major = Number(version[1]);
-    browser.android.version.minor = Number(version[2]);
-    if (version[3]) {
+    if (version.length > 1) {
+      browser.android.version.major = Number(version[1]);
+    }
+    if (version.length > 2) {
+      browser.android.version.minor = Number(version[2]);
+    }
+    if (version.length > 3) {
       browser.android.version.rev = Number(version[3]);
     }
     if (/Chrome\//.exec(navigator.userAgent)) {
