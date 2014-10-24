@@ -3,7 +3,7 @@
 FIVEL_DIR=$(dirname $0)
 echo "Linking files from $FIVEL_DIR..."
 
-mkdir -p js css html img
+mkdir -p www/js www/css www/html www/img
 
 ln -s ../../$FIVEL_DIR/css/login.css www/css/login.css
 ln -s ../../$FIVEL_DIR/css/mobileapp.css www/css/mobileapp.css
@@ -32,8 +32,12 @@ ln -s ../../$FIVEL_DIR/js/legacy.js www/js/legacy.js
 mkdir -p hooks/before_build hooks/before_run hooks/after_build hooks/after_run
 ln -s ../../$FIVEL_DIR/050_fivel_before_build.sh hooks/before_build/
 ln -s ../../$FIVEL_DIR/050_fivel_before_build.sh hooks/before_run/
+ln -s ../../$FIVEL_DIR/050_fivel_before_build.sh hooks/before_emulate/
+ln -s ../../$FIVEL_DIR/050_fivel_before_build.sh hooks/before_platform_add/
 ln -s ../../$FIVEL_DIR/050_fivel_after_build.sh hooks/after_build/
 ln -s ../../$FIVEL_DIR/050_fivel_after_build.sh hooks/after_run/
+ln -s ../../$FIVEL_DIR/050_fivel_after_build.sh hooks/after_emulate/
+ln -s ../../$FIVEL_DIR/050_fivel_after_build.sh hooks/after_platform_add/
 
 
 echo "Creating/copying other required files..."
