@@ -3,7 +3,7 @@
 if [ ! -e www~ ]; then
   mv www www~
   # OSX needs capital R for recursive. Does this work on Linux too?
-  cp -rL www~ www || cp -RL www~ www
+  cp -RL www~ www
 fi;
 
 # regenerate icons if necessary
