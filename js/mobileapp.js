@@ -32,6 +32,13 @@ MobileApp = function(name, options) {
     this.loadView(location.hash.substring(1));
   }).bind(this));
 //  this.emulateSwipe(); // broken
+  // iOS7 status bar background
+  if (this.browser.iOS && this.browser.iOS.version.major >= 7 && 
+      this.browser.webview) {
+    var statusHeight = 20 / this.zoom;
+    $(document.body).css('border-top', statusHeight + 'px solid #ccc');
+    this.actionBar.container.css('border-top', statusHeight + 'px solid #ccc');
+  }
   return this;
 }
 
@@ -65,7 +72,9 @@ MobileApp.prototype.detectBrowser = function() {
     }
     if (/iPad/.exec(navigator.userAgent)) {
       browser.tablet = true;
+      $(document.body).addClass('tablet');
     }
+    browser.webview = !/Safari/.exec(navigator.userAgent);
   }
   if (/Android/.exec(navigator.userAgent)) {
     browser.android = {}
@@ -84,10 +93,11 @@ MobileApp.prototype.detectBrowser = function() {
     if (/Chrome\//.exec(navigator.userAgent)) {
       browser.android.chrome = true;
     } else {
-      browser.android.webview = true;
+      browser.webview = true;
     }
     if (!/Mobile Safari/.exec(navigator.userAgent)) {
       browser.tablet = true;
+      $(document.body).addClass('tablet');
     }
   }
   return browser;
