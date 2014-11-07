@@ -32,7 +32,8 @@ if [ -f icon.svg ] ; then
           ;;
         ios)
           RESOURCE_DIR=$(ls -d platforms/ios/*/Resources)
-          if [ ! -z "$RESOURCE_DIR" -a icon.svg -nt $RESOURCE_DIR/icons/icon.png ]; then
+          if [ ! -z "$RESOURCE_DIR" -a icon.svg -nt $RESOURCE_DIR/icons/icon.png -a \
+            icon.svg -nt $RESOURCE_DIR/../Images.xcassets/AppIcon.appiconset/icon.png]; then
             echo "Updating iOS icons..."
             $INKSCAPE -w  40 -h  40 --export-png $RESOURCE_DIR/icons/icon-40.png icon.svg
             $INKSCAPE -w  80 -h  80 --export-png $RESOURCE_DIR/icons/icon-40@2x.png icon.svg
@@ -40,6 +41,7 @@ if [ -f icon.svg ] ; then
             $INKSCAPE -w 100 -h 100 --export-png $RESOURCE_DIR/icons/icon-50@2x.png icon.svg
             $INKSCAPE -w  60 -h  60 --export-png $RESOURCE_DIR/icons/icon-60.png icon.svg
             $INKSCAPE -w 120 -h 120 --export-png $RESOURCE_DIR/icons/icon-60@2x.png icon.svg
+            $INKSCAPE -w 180 -h 180 --export-png $RESOURCE_DIR/icons/icon-60@3x.png icon.svg
             $INKSCAPE -w  72 -h  72 --export-png $RESOURCE_DIR/icons/icon-72.png icon.svg
             $INKSCAPE -w 144 -h 144 --export-png $RESOURCE_DIR/icons/icon-72@2x.png icon.svg
             $INKSCAPE -w  76 -h  76 --export-png $RESOURCE_DIR/icons/icon-76.png icon.svg
